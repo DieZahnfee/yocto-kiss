@@ -14,7 +14,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=74e9dd589a0ab212a9002b15ef2b82f0"
 
 PV = "1.0+git${SRCPV}"
 SRCREV = "923e7d7ebc5c1f009755bdeb789ac25658ccce03"
-S = "${WORKDIR}/git"
 
 DEPENDS = "ncurses"
 
