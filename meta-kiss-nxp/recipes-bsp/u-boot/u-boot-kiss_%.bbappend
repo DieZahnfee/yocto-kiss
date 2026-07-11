@@ -15,7 +15,7 @@ EXTRA_OEMAKE:append:freiheit93 = " BINMAN_INDIRS=${RECIPE_SYSROOT}/firmware"
 do_configure:append:freiheit93() {
     # Copy tfa, tee and ele firmware binaries in build directory, so they can be found by mkimage
     config="${@ d.getVar('UBOOT_MACHINE').strip()}"
-    cp ${STAGING_DIR_HOST}/firmware/bl31.bin ${B}/${config}/
+    cp ${STAGING_DIR_HOST}/firmware/trusted-firmware-a/bl31.bin ${B}/${config}/
     cp ${STAGING_DIR_HOST}/${nonarch_base_libdir}/firmware/tee-raw.bin ${B}/${config}/tee.bin
     cp ${STAGING_DIR_HOST}/${nonarch_base_libdir}/firmware/imx/ele/${SECO_FIRMWARE_NAME} ${B}/${config}/
 }
