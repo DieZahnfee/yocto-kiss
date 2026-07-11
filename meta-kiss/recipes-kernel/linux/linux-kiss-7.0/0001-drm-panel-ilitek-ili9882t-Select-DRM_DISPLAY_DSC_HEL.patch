@@ -18,6 +18,7 @@ Tested-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
 Reviewed-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
 Link: https://patch.msgid.link/20260115125136.64866-1-mcanal@igalia.com
 Signed-off-by: Maíra Canal <mcanal@igalia.com>
+Upstream-Status: Backport [68e28facbc8ab3e701e1814323d397a75b400865]
 ---
  drivers/gpu/drm/panel/Kconfig | 1 +
  1 file changed, 1 insertion(+)
