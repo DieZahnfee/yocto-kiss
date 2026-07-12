@@ -1,11 +1,14 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI:append:freiheit93 = " \
-	file://optee.cfg \
 	file://0001-binman-Add-optee-binary-to-i.MX9-platform-types.patch \
 	file://0002-imx93-Add-support-for-OPTEE.patch \
 	file://0003-imx93_frdm-Add-support-for-2CS-2GB-DRAM-support.patch \
 "
+# DEBUG-ONLY (Branch debug-no-optee): optee.cfg (CONFIG_OPTEE=y) bewusst
+# entfernt, um zu testen, ob die noch nicht upstream gemergte OPTEE/binman-
+# Integration (Patch 0002, Upstream-Status: Submitted) den Boot vor jeglicher
+# UART-Ausgabe zum Haengen bringt. Nicht nach wrynose-compat mergen.
 
 # We will embed boot firmwares, TFA images and optee image in the generated
 # binary: we do depend on them.
