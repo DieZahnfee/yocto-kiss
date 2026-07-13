@@ -1,0 +1,40 @@
+From: freiheit93 board bring-up <noreply@example.invalid>
+Subject: [PATCH] arm64: dts: imx93-11x11-frdm: disable lpuart5 hw flow control
+
+The onboard NXP IW612 WiFi/BT combo chip's Bluetooth function is
+attached to lpuart5. Mainline's uart-has-rtscts on this node causes
+the LPUART peripheral to gate outgoing HCI commands on the chip's CTS
+line; the chip never actually receives them on this board revision,
+so every HCI command (starting with HCI_Reset, opcode 0x0c03) times
+out with -110 even though the driver-level TX path reports success
+(confirmed via btmon: command sent, no response ever, including well
+after boot with WLAN fully initialized and the combo firmware's own
+"boot sign" already detected as present).
+
+NXP's own downstream reference DTS for the physically identical
+board (meta-imx-frdm, imx93-11x11-frdm basic support patch) does not
+set uart-has-rtscts on this node at all. Drop it to match.
+
+Upstream-Status: Inappropriate [board-specific hardware workaround,
+not yet root-caused at the electrical level; needs confirmation
+before submitting upstream]
+
+Signed-off-by: freiheit93 board bring-up <noreply@example.invalid>
+---
+ arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
+--- a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
++++ b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
+@@ -387,8 +387,6 @@
+ 	pinctrl-names = "default";
+ 	status = "okay";
+
+-	uart-has-rtscts;
+-
+ 	bluetooth {
+ 		compatible = "nxp,88w8987-bt";
+ 		device-wakeup-gpios = <&pcal6408 3 GPIO_ACTIVE_HIGH>;
+--
+2.43.0
