@@ -39,3 +39,59 @@ This layer extend the simple meta-kiss layer with more complex
 architectures that need specific firmwares with more nested boot flow.
 It is not useful as is, but rather as a reference on how a layer can
 be written without unnecessary complications.
+
+freiheit93 feature status (2026-07-13)
+=======================================
+
+Boots end-to-end (SPL/ATF/U-Boot/kernel/rootfs) to a login prompt.
+Hardware-verified feature status beyond the base boot:
+
+  WiFi          - working. On-board combo chip is the NXP IW612
+                  (SDIO vendor 0x0471/device 0x0205, btnxpuart ChipID
+                  0x7601 - not the Marvell 88W8987 the upstream DTS
+                  bluetooth node's compatible string suggests).
+                  Mainline mwifiex has no IW612 ID table entry, so
+                  this uses NXP's downstream kernel-module-nxp-wlan
+                  (moal/mlan), patched to build against the real
+                  (non-wireless_dev) mainline cfg80211 API.
+
+  Bluetooth     - firmware present and requested correctly by the
+                  in-tree btnxpuart driver (same firmware package as
+                  WiFi, firmware-nxp-wifi-nxpiw612-sdio), but bringing
+                  hci0 up reproducibly fails with
+                  "Opcode 0x0c03 failed: -110" (HCI Reset timeout).
+                  The lpuart5 DTS node has uart-has-rtscts and a
+                  dedicated reset-gpios line, and its vcc-supply is
+                  the SAME regulator as the WiFi SDIO function
+                  (reg_usdhc3_vmmc) - possible power/reset sequencing
+                  interaction between the two radios of the combo
+                  chip. Not yet root-caused.
+
+  M33/rpmsg     - imx-m33-demos firmware deploys correctly to
+                  /lib/firmware. remoteproc0 comes up "attached"
+                  (TF-A already started the M33 core before Linux
+                  boots), but `echo stop > .../state` fails ("Not in
+                  wfi, force stopped" / "Failed to stop remote core").
+                  Loading a new demo image via pure Linux remoteproc
+                  therefore doesn't currently work from the attached
+                  state. Likely needs the U-Boot bootaux path instead
+                  (would require IMAGE_BOOT_FILES/WKS_FILE_DEPENDS
+                  wiring that was deliberately left out when this was
+                  first added, on the assumption the attached-state
+                  stop/start cycle would just work).
+
+  MIPI-DSI/CSI  - kernel-side prep only (CONFIG_DRM_IMX93_MIPI_DSI).
+                  No display or camera hardware attached to verify
+                  against. Mainline's imx91_93_common.dtsi has no
+                  lcdif/dsi/ldb DT nodes yet (NXP downstream carries
+                  them) - a future panel bring-up needs those nodes
+                  added, not just kernel config. i.MX93 also has no
+                  mainline driver for its DWC MIPI CSI-2 host, so
+                  camera capture isn't possible with mainline alone
+                  yet regardless of sensor choice.
+
+  MQS audio     - working. mqs-audio ALSA card present,
+                  speaker-test/aplay produce real 48kHz stereo PCM
+                  output (alsa-utils-aplay/-speaker-test pulled in
+                  via CORE_IMAGE_EXTRA_INSTALL in the kas config, not
+                  this layer).
