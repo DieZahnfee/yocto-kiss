@@ -55,17 +55,19 @@ Hardware-verified feature status beyond the base boot:
                   (moal/mlan), patched to build against the real
                   (non-wireless_dev) mainline cfg80211 API.
 
-  Bluetooth     - firmware present and requested correctly by the
-                  in-tree btnxpuart driver (same firmware package as
-                  WiFi, firmware-nxp-wifi-nxpiw612-sdio), but bringing
-                  hci0 up reproducibly fails with
-                  "Opcode 0x0c03 failed: -110" (HCI Reset timeout).
-                  The lpuart5 DTS node has uart-has-rtscts and a
-                  dedicated reset-gpios line, and its vcc-supply is
-                  the SAME regulator as the WiFi SDIO function
-                  (reg_usdhc3_vmmc) - possible power/reset sequencing
-                  interaction between the two radios of the combo
-                  chip. Not yet root-caused.
+  Bluetooth     - working (fixed 2026-07-13). hci0 up used to fail
+                  reproducibly with "Opcode 0x0c03 failed: -110" (HCI
+                  Reset timeout), even after the combo chip's firmware
+                  boot-sign was correctly detected as present (btmon
+                  confirmed the command left the host but no response
+                  ever came back, including long after boot with WiFi
+                  fully initialized). Root cause: lpuart5's
+                  uart-has-rtscts in mainline's DTS - NXP's own
+                  reference DTS for the physically identical board
+                  does not set it. Removed via
+                  0002-arm64-dts-imx93-11x11-frdm-disable-lpuart5-hw-flow-.patch;
+                  hciconfig hci0 up now succeeds and stays UP RUNNING
+                  with real Manufacturer/HCI/LMP data, verified live.
 
   M33/rpmsg     - imx-m33-demos firmware deploys correctly to
                   /lib/firmware. remoteproc0 comes up "attached"
